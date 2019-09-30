@@ -11,13 +11,19 @@ export class UsersService {
         private readonly userModel: Model<User>,
     ) {}
 
-    async create(createUserDto: UserDto): Promise<User> {
+    async create(createUserDto: UserDto): Promise<{ id: string }> {
         const createdUser = new this.userModel(createUserDto);
+        const instance = await createdUser.save();
 
-        return await createdUser.save();
+        return { id: instance.id };
     }
 
     async findAll(): Promise<User[]> {
         return await this.userModel.find().exec();
+    }
+
+    async findOne(id: string): Promise<User> {
+        console.log('find one', id);
+        return await this.userModel.findById(id).exec();
     }
 }
