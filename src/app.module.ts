@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from './config/config.module';
 import { ConfigService } from './config/config.service';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { ConfigService } from './config/config.service';
       inject: [ConfigService],
     }),
     ConfigModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
