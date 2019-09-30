@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import * as mongoose from 'mongoose';
 import { Model } from 'mongoose';
 import { UserDto } from './dto/user.dto';
 import { User } from './interfaces/user.interface';
@@ -23,7 +24,15 @@ export class UsersService {
     }
 
     async findOne(id: string): Promise<User> {
-        return await this.userModel.findById(id).exec();
+        try {
+            return await this.userModel.findById(id).exec();
+        } catch (err) {
+            if (err instanceof mongoose.Error.CastError) {
+                throw new NotFoundException();
+            }
+
+            throw err;
+        }
     }
 
     async delete(id: string) {
