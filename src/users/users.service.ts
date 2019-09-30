@@ -23,7 +23,10 @@ export class UsersService {
     }
 
     async findOne(id: string): Promise<User> {
-        console.log('find one', id);
         return await this.userModel.findById(id).exec();
+    }
+
+    async delete(id: string) {
+        return await this.userModel.findByIdAndDelete(id);
     }
 }
