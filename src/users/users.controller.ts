@@ -13,6 +13,10 @@ export class UsersController {
 
     @Get(':id')
     findOne(@Param('id') id: string) {
+        if (!id) {
+            return this.users.findAll();
+        }
+
         return this.users.findOne(id);
     }
 
