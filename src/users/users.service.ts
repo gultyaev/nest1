@@ -20,12 +20,23 @@ export class UsersService {
     }
 
     async findAll(): Promise<User[]> {
-        return await this.userModel.find().exec();
+        return await this.userModel
+            .find()
+            .select('-roles')
+            .exec();
     }
 
-    async findOne(id: string): Promise<User> {
+    async findOne(id: string, withRoles = false): Promise<User> {
         try {
-            return await this.userModel.findById(id).exec();
+            const query = this.userModel.findById(id);
+
+            if (withRoles) {
+                query.populate('roles');
+            } else {
+                query.select('-roles');
+            }
+
+            return await query.exec();
         } catch (err) {
             if (err instanceof mongoose.Error.CastError) {
                 throw new NotFoundException();
@@ -36,6 +47,6 @@ export class UsersService {
     }
 
     async delete(id: string) {
-        return await this.userModel.findByIdAndDelete(id);
+        return await this.userModel.findByIdAndDelete(id).exec();
     }
 }

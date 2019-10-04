@@ -10,8 +10,10 @@ export const UserSchema = new mongoose.Schema({
         required: true,
     },
     name: String,
-    updated: {
-        type: Date,
-        default: Date.now,
-    },
+    roles: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Role',
+        },
+    ],
 });
