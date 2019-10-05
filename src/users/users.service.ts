@@ -34,17 +34,15 @@ export class UsersService {
         try {
             const query = this.userModel.findOne(filter);
 
-            if (!query) {
-                throw new NotFoundException();
-            }
-
             if (withRoles) {
                 query.populate('roles');
             } else {
                 query.select('-roles');
             }
 
-            return await query.exec();
+            const user = await query.exec();
+
+            return user;
         } catch (err) {
             if (err instanceof mongoose.Error.CastError) {
                 throw new NotFoundException();
