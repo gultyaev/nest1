@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import * as bcrypt from 'bcrypt';
 import * as mongoose from 'mongoose';
 import { Model } from 'mongoose';
 import { UserDto } from './dto/user.dto';
@@ -14,6 +15,9 @@ export class UsersService {
 
     async create(createUserDto: UserDto): Promise<{ id: string }> {
         const createdUser = new this.userModel(createUserDto);
+
+        createdUser.password = await bcrypt.hash(createdUser.password, 10);
+
         const instance = await createdUser.save();
 
         return { id: instance.id };
@@ -22,13 +26,17 @@ export class UsersService {
     async findAll(): Promise<User[]> {
         return await this.userModel
             .find()
-            .select('-roles')
+            .select('-roles -password')
             .exec();
     }
 
-    async findOne(id: string, withRoles = false): Promise<User> {
+    async findOne(filter: any = {}, withRoles = false): Promise<User> {
         try {
-            const query = this.userModel.findById(id);
+            const query = this.userModel.findOne(filter);
+
+            if (!query) {
+                throw new NotFoundException();
+            }
 
             if (withRoles) {
                 query.populate('roles');
